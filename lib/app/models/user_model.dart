@@ -1,44 +1,69 @@
-import 'dart:convert';
+class AuthModel {
+  final String token;
+  final UserModel user;
 
-class UserModel {
-  String? uid;
-  String? name;
-  String? email;
-  String? password;
-
-  UserModel({
-    this.uid,
-    this.name,
-    this.email,
-    this.password,
+  AuthModel({
+    required this.token,
+    required this.user,
   });
 
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'uid': uid,
-      'name': name,
-      'email': email,
-      'password': password,
-    };
-  }
-
-  UserModel.empty();
-
-  String get getEmail => email!;
-  String get getName => name!;
-  String get getPassword => password!;
-
-  factory UserModel.fromMap(Map<String, dynamic> map) {
-    return UserModel(
-      uid: map['uid'] != null ? map['uid'] as String : null,
-      name: map['name'] != null ? map['name'] as String : null,
-      email: map['email'] != null ? map['email'] as String : null,
-      password: map['password'] != null ? map['password'] as String : null,
+  factory AuthModel.fromJson(Map<String, dynamic> json) {
+    return AuthModel(
+      token: json['token'],
+      user: UserModel.fromJson(json['user']),
     );
   }
 
-  String toJson() => json.encode(toMap());
+  Map<String, dynamic> toJson() {
+    return {
+      'token': token,
+      'user': user.toJson(),
+    };
+  }
+}
 
-  factory UserModel.fromJson(String source) =>
-      UserModel.fromMap(json.decode(source) as Map<String, dynamic>);
+class UserModel {
+  final int id;
+  final String name;
+  final String email;
+  final DateTime? emailVerifiedAt;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+
+  UserModel({
+    required this.id,
+    required this.name,
+    required this.email,
+    this.emailVerifiedAt,
+    this.createdAt,
+    this.updatedAt,
+  });
+
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    return UserModel(
+      id: json['id'],
+      name: json['name'],
+      email: json['email'],
+      emailVerifiedAt: json['email_verified_at'] != null
+          ? DateTime.parse(json['email_verified_at'])
+          : null,
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'])
+          : null,
+      updatedAt: json['updated_at'] != null
+          ? DateTime.parse(json['updated_at'])
+          : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'email': email,
+      'email_verified_at': emailVerifiedAt?.toIso8601String(),
+      'created_at': createdAt?.toIso8601String(),
+      'updated_at': updatedAt?.toIso8601String(),
+    };
+  }
 }

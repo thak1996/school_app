@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:school_app/app/components/app_text.dart';
 import 'package:school_app/app/screens/public/splash/splash_controller.dart';
 import 'package:school_app/app/screens/public/splash/splash_state.dart';
-import 'package:school_app/app/service/auth_service.dart';
 
 class SplashPage extends StatelessWidget {
   const SplashPage({super.key});
@@ -31,18 +30,20 @@ class SplashPage extends StatelessWidget {
         body: Center(
           child: Consumer<SplashController>(
             builder: (context, controller, _) {
-              switch (controller.state.runtimeType) {
-                case SplashStateSuccess:
-                  Modular.to.pushReplacementNamed('/private-module/');
-                  return const SizedBox.shrink();
-                case SplashStateFail:
-                  Modular.to.pushReplacementNamed('/login');
-                  return const SizedBox.shrink();
-                case SplashStateLoading:
-                  Modular.to.pushReplacementNamed('/login');
-                  return const SizedBox.shrink();
+              switch (controller.state) {
+                case SplashStateSuccess():
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    Modular.to.pushReplacementNamed('/private-module/');
+                  });
+                  return _buildLoading();
+                case SplashStateFail():
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    Modular.to.pushReplacementNamed('/login');
+                  });
+                  return _buildLoading();
+                case SplashStateLoading():
                 default:
-                  return const SizedBox.shrink();
+                  return _buildLoading();
               }
             },
           ),

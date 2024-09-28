@@ -11,7 +11,11 @@ class PublicModule extends Module {
   @override
   void binds(i) {
     i.addLazySingleton<LoginController>(
-        () => LoginController(const SecureStorageService()));
+      () => LoginController(
+        const SecureStorageService(),
+        AuthService(),
+      ),
+    );
     i.addLazySingleton(() => const FlutterSecureStorage());
     i.addLazySingleton<SplashController>(() => SplashController());
   }

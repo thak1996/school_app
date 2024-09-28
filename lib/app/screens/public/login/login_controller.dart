@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:school_app/app/screens/public/login/login_model.dart';
 import 'package:school_app/app/screens/public/login/login_state.dart';
@@ -5,11 +8,12 @@ import 'package:school_app/app/service/auth_service.dart';
 import 'package:school_app/app/utils/secure_storage.dart';
 
 class LoginController extends ChangeNotifier {
-  LoginController(this._secureStorageService);
+  LoginController(this._secureStorageService, this._authService);
 
   final LoginModel loginModel = LoginModel();
 
   final SecureStorageService _secureStorageService;
+  final AuthService _authService;
   LoginState _state = LoginStateInitial();
 
   LoginState get state => _state;
@@ -21,26 +25,29 @@ class LoginController extends ChangeNotifier {
   }
 
   Future<void> login() async {
+    log("Passou aqui no Login");
     if (!validateFields()) return;
     _changeState(LoginStateLoading());
-    // final result = await _authFirebase.signInWithEmailAndPassword(
-    //   email: loginModel.email!,
-    //   password: loginModel.password!,
-    // );
-    // return result.fold(
-    //   (error) => _changeState(LoginStateFail(error.message)),
-    //   (sucess) async {
-    //     await _secureStorageService.write(
-    //       key: "CURRENT_USER",
-    //       value: sucess.toJson(),
-    //     );
-    //     _changeState(LoginStateSuccess());
-    //   },
-    // );
+    final result = await _authService.login(
+      email: loginModel.email!,
+      password: loginModel.password!,
+    );
+    return result.fold(
+      (error) => _changeState(LoginStateFail(error.message)),
+      (sucess) async {
+        await _secureStorageService.write(
+          key: "CURRENT_USER",
+          value: jsonEncode(sucess.toJson()),
+        );
+        _changeState(LoginStateSuccess());
+      },
+    );
   }
 
   void _changeState(LoginState newState) {
     _state = newState;
     notifyListeners();
   }
+
+  void updateUI() => notifyListeners();
 }

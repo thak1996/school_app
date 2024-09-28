@@ -48,14 +48,14 @@ class LoginModel {
       setError(FieldType.password, "Senha não pode estar vazia");
       return getError(FieldType.password);
     }
-    final passwordRegex = RegExp(
-      r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#\$%^&*])[A-Za-z\d!@#\$%^&*]{8,}$',
-    );
-    if (!passwordRegex.hasMatch(_password!)) {
-      setError(FieldType.password,
-          "A senha deve conter pelo menos uma letra maiúscula, uma letra minúscula, um número e um caractere especial");
-      return getError(FieldType.password);
-    }
+    // final passwordRegex = RegExp(
+    //   r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#\$%^&*])[A-Za-z\d!@#\$%^&*]{8,}$',
+    // );
+    // if (!passwordRegex.hasMatch(_password!)) {
+    //   setError(FieldType.password,
+    //       "A senha deve conter pelo menos uma letra maiúscula, uma letra minúscula, um número e um caractere especial");
+    //   return getError(FieldType.password);
+    // }
     if (_password!.length < 6) {
       setError(FieldType.password, "A senha deve ter pelo menos 6 caracteres");
       return getError(FieldType.password);

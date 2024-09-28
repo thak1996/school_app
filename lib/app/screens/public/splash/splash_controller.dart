@@ -13,6 +13,7 @@ class SplashController extends ChangeNotifier {
   Future<void> checkLogin() async {
     _changeState(SplashStateLoading());
     await Future.delayed(const Duration(seconds: 2));
+    _changeState(SplashStateFail('Erro ao verificar login'));
   }
 
   void _changeState(SplashState newState) {

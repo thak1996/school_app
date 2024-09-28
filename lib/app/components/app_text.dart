@@ -49,7 +49,6 @@ class AppText extends StatelessWidget {
 
     TextStyle? finalStyle = style ?? textStyles[textStyleKey];
 
-    // Aplica a cor se fornecida
     if (color != null) {
       finalStyle = finalStyle?.copyWith(color: color);
     }

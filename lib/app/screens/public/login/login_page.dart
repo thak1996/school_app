@@ -32,6 +32,7 @@ class LoginPage extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) => LoginController(
         const SecureStorageService(),
+        AuthService(),
       ),
       child: Scaffold(
         body: SingleChildScrollView(
@@ -85,6 +86,7 @@ class LoginPage extends StatelessWidget {
                               onPressed: () async {
                                 List<String> validationErrors =
                                     controller.loginModel.validateAll();
+                                controller.updateUI();
                                 if (validationErrors.isNotEmpty) return;
                                 await controller.login();
                                 if (controller.state is LoginStateSuccess) {
