@@ -27,6 +27,59 @@ class LoginPage extends StatelessWidget {
     );
   }
 
+  Widget footer(BuildContext context, LoginController controller) {
+    return ElevatedButton(
+      onPressed: () async {
+        List<String> validationErrors = controller.loginModel.validateAll();
+        controller.updateUI();
+        if (validationErrors.isNotEmpty) return;
+        await controller.login();
+        if (controller.state is LoginStateSuccess) {
+          Modular.to.pushReplacementNamed('/private-module/');
+        }
+      },
+      child: const AppTextBodyMedium("Entrar"),
+    );
+  }
+
+  Widget body(BuildContext context, LoginController controller) {
+    return Column(
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 0.2.sw),
+          child: AppTextFormField(
+            label: 'E-mail',
+            isRequired: true,
+            onChanged: (value) => controller.loginModel.setEmail = value,
+            errorMessage: controller.loginModel.getError(FieldType.email),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 0.2.sw),
+          child: AppTextFormField(
+            label: 'Senha',
+            isRequired: true,
+            isPassword: true,
+            onChanged: (value) => controller.loginModel.setPassword = value,
+            errorMessage: controller.loginModel.getError(FieldType.password),
+          ),
+        ),
+        if (controller.state is LoginStateFail)
+          Padding(
+            padding: EdgeInsets.only(top: 8.h, bottom: 16.h),
+            child: Align(
+              alignment: Alignment.center,
+              child: AppTextBodySmall(
+                (controller.state as LoginStateFail).message,
+                color: Colors.red,
+              ),
+            ),
+          ),
+        SizedBox(height: 0.05.sh),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -48,67 +101,16 @@ class LoginPage extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         header(),
-                        Column(
-                          children: [
-                            AppTextFormField(
-                              label: 'E-mail',
-                              isRequired: true,
-                              onChanged: (value) =>
-                                  controller.loginModel.setEmail = value,
-                              errorMessage: controller.loginModel
-                                  .getError(FieldType.email),
-                            ),
-                            AppTextFormField(
-                              label: 'Senha',
-                              isRequired: true,
-                              isPassword: true,
-                              onChanged: (value) =>
-                                  controller.loginModel.setPassword = value,
-                              errorMessage: controller.loginModel
-                                  .getError(FieldType.password),
-                            ),
-                            if (controller.state is LoginStateFail)
-                              Padding(
-                                padding: EdgeInsets.only(
-                                  top: 8.h,
-                                  bottom: 16.h,
-                                ),
-                                child: Align(
-                                  alignment: Alignment.center,
-                                  child: AppTextBodySmall(
-                                    (controller.state as LoginStateFail)
-                                        .message,
-                                    color: Colors.red,
-                                  ),
-                                ),
-                              ),
-                            ElevatedButton(
-                              onPressed: () async {
-                                List<String> validationErrors =
-                                    controller.loginModel.validateAll();
-                                controller.updateUI();
-                                if (validationErrors.isNotEmpty) return;
-                                await controller.login();
-                                if (controller.state is LoginStateSuccess) {
-                                  Modular.to.pushReplacementNamed(
-                                    '/private-module/',
-                                  );
-                                }
-                              },
-                              child: const AppTextBodyMedium("Entrar"),
-                            ),
-                          ],
-                        ),
+                        body(context, controller),
+                        footer(context, controller),
                       ],
                     ),
                   ),
                   if (controller.state is LoginStateLoading)
                     SizedBox(
-                      height: ScreenUtil().screenHeight,
-                      width: ScreenUtil().screenWidth,
-                      child: const Center(
-                        child: CircularProgressIndicator(),
-                      ),
+                      height: 1.sh,
+                      width: 1.sw,
+                      child: const Center(child: CircularProgressIndicator()),
                     ),
                 ],
               );

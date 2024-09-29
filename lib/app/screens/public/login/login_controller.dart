@@ -25,7 +25,6 @@ class LoginController extends ChangeNotifier {
   }
 
   Future<void> login() async {
-    log("Passou aqui no Login");
     if (!validateFields()) return;
     _changeState(LoginStateLoading());
     final result = await _authService.login(
