@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:school_app/app/components/app_text.dart';
 import 'package:school_app/app/components/app_text_form_field.dart';
-import 'package:school_app/app/screens/public/login/login_controller.dart';
-import 'package:school_app/app/screens/public/login/login_model.dart';
-import 'package:school_app/app/screens/public/login/login_state.dart';
+import 'package:school_app/app/screens/public/recovery/recovery_controller.dart';
+import 'package:school_app/app/screens/public/recovery/recovery_state.dart';
 import 'package:school_app/app/service/auth_service.dart';
-import 'package:school_app/app/utils/secure_storage.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 
-class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+class RecoveryPage extends StatelessWidget {
+  const RecoveryPage({super.key});
 
   Column header() {
     return Column(
@@ -19,7 +17,7 @@ class LoginPage extends StatelessWidget {
         Padding(
           padding: EdgeInsets.symmetric(vertical: 16.h),
           child: const AppTextHeadlineMedium(
-            "Login",
+            "Recuperar Senha",
             textAlign: TextAlign.center,
           ),
         ),
@@ -27,31 +25,42 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-  Widget footer(BuildContext context, LoginController controller) {
+  Widget footer(BuildContext context, RecoveryController controller) {
     return Column(
       children: [
         ElevatedButton(
           onPressed: () async {
-            List<String> validationErrors = controller.loginModel.validateAll();
-            controller.updateUI();
-            if (validationErrors.isNotEmpty) return;
-            await controller.login();
-            if (controller.state is LoginStateSuccess) {
-              Modular.to.pushReplacementNamed('/private-module/');
+            if (controller.getEmailError() != null) {
+              controller.updateUI();
+              return;
+            }
+            await controller.sendRecoveryCode();
+            if (context.mounted) {
+              if (controller.state is RecoveryStateSuccess) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      (controller.state as RecoveryStateSuccess).message ?? '',
+                    ),
+                  ),
+                );
+              }
             }
           },
-          child: const AppTextBodyMedium("Entrar"),
+          child: const AppTextBodyMedium("Enviar Código"),
         ),
         SizedBox(height: 16.h),
         TextButton(
-          onPressed: () => Modular.to.pushNamed('/recovery'),
-          child: const AppTextBodyMedium("Recuperar Senha"),
+          onPressed: () {
+            Modular.to.pushNamed('/code');
+          },
+          child: const AppTextBodyMedium("Já possui um código?"),
         ),
       ],
     );
   }
 
-  Widget body(BuildContext context, LoginController controller) {
+  Widget body(BuildContext context, RecoveryController controller) {
     return Column(
       children: [
         Padding(
@@ -59,27 +68,17 @@ class LoginPage extends StatelessWidget {
           child: AppTextFormField(
             label: 'E-mail',
             isRequired: true,
-            onChanged: (value) => controller.loginModel.setEmail = value,
-            errorMessage: controller.loginModel.getError(FieldType.email),
+            onChanged: (value) => controller.setEmail(value),
+            errorMessage: controller.getEmailError(),
           ),
         ),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 0.2.sw),
-          child: AppTextFormField(
-            label: 'Senha',
-            isRequired: true,
-            isPassword: true,
-            onChanged: (value) => controller.loginModel.setPassword = value,
-            errorMessage: controller.loginModel.getError(FieldType.password),
-          ),
-        ),
-        if (controller.state is LoginStateFail)
+        if (controller.state is RecoveryStateFail)
           Padding(
             padding: EdgeInsets.only(top: 8.h, bottom: 16.h),
             child: Align(
               alignment: Alignment.center,
               child: AppTextBodySmall(
-                (controller.state as LoginStateFail).message,
+                (controller.state as RecoveryStateFail).message,
                 color: Colors.red,
               ),
             ),
@@ -92,19 +91,17 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => LoginController(
-        const SecureStorageService(),
-        AuthService(),
-      ),
+      create: (_) => RecoveryController(AuthService()),
       child: Scaffold(
         body: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 32.h),
-          child: Consumer<LoginController>(
+          child: Consumer<RecoveryController>(
             builder: (context, controller, _) {
               return Stack(
                 children: [
                   Opacity(
-                    opacity: controller.state is LoginStateLoading ? 0.5 : 1.0,
+                    opacity:
+                        controller.state is RecoveryStateLoading ? 0.5 : 1.0,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -115,7 +112,7 @@ class LoginPage extends StatelessWidget {
                       ],
                     ),
                   ),
-                  if (controller.state is LoginStateLoading)
+                  if (controller.state is RecoveryStateLoading)
                     SizedBox(
                       height: 1.sh,
                       width: 1.sw,

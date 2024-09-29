@@ -71,14 +71,21 @@ class AuthException extends Failure {
       case 'email-already-exists':
         return 'O e-mail fornecido já está em uso. Por favor, verifique suas informações ou crie uma nova conta.';
       case 'user-not-found':
+        return 'O e-mail fornecido não foi encontrado. Por favor, verifique suas informações.';
       case 'wrong-password':
-        return 'O e-mail ou a senha estão incorretos. Por favor, verifique suas informações ou crie uma nova conta.';
+        return 'A senha está incorreta. Por favor, verifique suas informações.';
+      case 'reset-code-exists':
+        return 'Você já solicitou um código de redefinição. Utilize o código anterior ou aguarde o tempo de expiração.';
       case 'network-request-failed':
         return 'Não foi possível conectar ao servidor remoto. Por favor, verifique sua conexão e tente novamente.';
       case 'too-many-requests':
-        return 'Devido a tentativas consecutivas falhas, você não pode fazer login neste momento. Por favor, tente novamente em alguns momentos.';
+        return 'Devido a tentativas consecutivas falhas. Por favor aguarde um pouco e tente novamente em alguns momentos.';
       case 'internal':
         return 'Não foi possível criar sua conta neste momento. Por favor, verifique suas informações e tente novamente.';
+      case 'code-sent':
+        return 'O código de redefinição foi enviado com sucesso.';
+      case 'wait-to-resend':
+        return 'Por favor, aguarde 30 segundos para enviar um novo código.';
       default:
         return 'Ocorreu um erro interno. Por favor, tente novamente mais tarde.';
     }

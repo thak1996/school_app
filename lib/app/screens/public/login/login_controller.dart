@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:school_app/app/screens/public/login/login_model.dart';
 import 'package:school_app/app/screens/public/login/login_state.dart';

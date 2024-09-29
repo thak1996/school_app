@@ -14,6 +14,7 @@ Generate code, corrections, and refactorings that comply with the basic principl
 -   Don't leave blank lines within a function.
 -   One export per file.
 -   Use Package ScreenUtils to manage screen sizes
+-   Whenever possible, use function arrow instead of function expression
 
 ### Nomenclature
 

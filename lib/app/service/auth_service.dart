@@ -38,6 +38,40 @@ class AuthService {
     }
   }
 
+  Future<DataResult<String>> sendRecoveryCode({required String email}) async {
+    try {
+      final response = await _uno.post(
+        '$_baseUrl/forgot-password',
+        data: {'email': email},
+      );
+      if (response.status == 200) {
+        final resetCode = response.data['reset_code'];
+        if (resetCode == null) {
+          return DataResult.failure(const GeneralException());
+        }
+        return DataResult.success(resetCode.toString());
+      }
+      return DataResult.failure(const GeneralException());
+    } catch (e) {
+      return DataResult.failure(AuthException(code: e.toString()));
+    }
+  }
+
+  Future<DataResult<void>> validateResetCode({required String code}) async {
+    try {
+      final response = await _uno.post(
+        '$_baseUrl/validate-reset-code',
+        data: {'code': code},
+      );
+      if (response.status == 200) {
+        return DataResult.success(null);
+      }
+      return DataResult.failure(const GeneralException());
+    } catch (e) {
+      return DataResult.failure(AuthException(code: e.toString()));
+    }
+  }
+
   Future<void> signOut() async {
     await _secureStorageService.delete(key: 'CURRENT_USER');
     await _uno.post('$_baseUrl/logout');
