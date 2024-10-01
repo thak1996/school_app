@@ -7,6 +7,7 @@ import 'package:school_app/app/components/app_text_form_field.dart';
 import 'package:school_app/app/screens/public/recovery/recovery_controller.dart';
 import 'package:school_app/app/screens/public/recovery/recovery_state.dart';
 import 'package:school_app/app/service/auth_service.dart';
+import 'package:school_app/app/widgets/minimal_app_bar.dart';
 
 class RecoveryCodePage extends StatelessWidget {
   const RecoveryCodePage({super.key});
@@ -80,6 +81,7 @@ class RecoveryCodePage extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) => RecoveryController(AuthService()),
       child: Scaffold(
+        appBar: MinimalAppBar(onBack: () => Navigator.of(context).pop()),
         body: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 32.h),
           child: Consumer<RecoveryController>(

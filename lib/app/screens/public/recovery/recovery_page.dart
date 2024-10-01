@@ -7,6 +7,7 @@ import 'package:school_app/app/screens/public/recovery/recovery_controller.dart'
 import 'package:school_app/app/screens/public/recovery/recovery_state.dart';
 import 'package:school_app/app/service/auth_service.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:school_app/app/widgets/minimal_app_bar.dart';
 
 class RecoveryPage extends StatelessWidget {
   const RecoveryPage({super.key});
@@ -29,6 +30,7 @@ class RecoveryPage extends StatelessWidget {
     return Column(
       children: [
         ElevatedButton(
+          child: const AppTextBodyMedium("Enviar Código"),
           onPressed: () async {
             if (controller.getEmailError() != null) {
               controller.updateUI();
@@ -47,13 +49,10 @@ class RecoveryPage extends StatelessWidget {
               }
             }
           },
-          child: const AppTextBodyMedium("Enviar Código"),
         ),
         SizedBox(height: 16.h),
         TextButton(
-          onPressed: () {
-            Modular.to.pushNamed('/code');
-          },
+          onPressed: () => Modular.to.pushNamed('/code'),
           child: const AppTextBodyMedium("Já possui um código?"),
         ),
       ],
@@ -93,6 +92,7 @@ class RecoveryPage extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) => RecoveryController(AuthService()),
       child: Scaffold(
+        appBar: MinimalAppBar(onBack: () => Navigator.of(context).pop()),
         body: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 32.h),
           child: Consumer<RecoveryController>(
